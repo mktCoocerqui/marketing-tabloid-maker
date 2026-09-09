@@ -5,6 +5,8 @@
 
 generator client {
   provider = "prisma-client-js"
+  // "native" p/ dev; "rhel-openssl-3.0.x" é o runtime serverless da Vercel (Amazon Linux).
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
