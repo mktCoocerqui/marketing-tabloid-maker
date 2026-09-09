@@ -10,9 +10,15 @@ export default async function CampanhasPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Campanhas</h1>
-        <p className="text-sm text-slate-500">Todos os tabloides e seus status.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Campanhas</h1>
+          <p className="text-sm text-slate-500">Importe o CSV da campanha (cria produtos + ofertas) e gerencie tabloides.</p>
+        </div>
+        <Link href="/admin/campanhas/importar"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+          Importar campanha (CSV)
+        </Link>
       </div>
       {tabloids.length === 0 ? (
         <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-slate-400">Nenhum tabloide ainda.</div>
