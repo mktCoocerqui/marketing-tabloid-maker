@@ -25,7 +25,13 @@ export default async function ProdutosPage() {
           <h1 className="text-2xl font-semibold">Produtos</h1>
           <p className="text-sm text-slate-500">Cada produto agrupa suas apresentações (KG, bandeja, fatiado…).</p>
         </div>
-        <NewProductDialog />
+        <div className="flex items-center gap-2">
+          <Link href="/admin/produtos/importar"
+            className="rounded-md border px-4 py-2 text-sm font-medium text-slate-600 hover:border-brand hover:text-brand">
+            Importar Excel
+          </Link>
+          <NewProductDialog />
+        </div>
       </div>
 
       {bases.length === 0 ? (
