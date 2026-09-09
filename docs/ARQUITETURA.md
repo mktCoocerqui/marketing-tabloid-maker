@@ -48,12 +48,13 @@ oferta por `offerId` e um estilo por `frameStyleId`; ele **não copia** os dados
 | Estado do editor | **Zustand + Immer + zundo** | Store leve e performática para o scene graph; `zundo` dá undo/redo por histórico de estados; Immer facilita patches imutáveis. |
 | Interação no canvas | **react-moveable + selecto** | Drag/resize/rotate, **snapping**, guias e **seleção múltipla (marquee)** prontos e maduros — evita reimplementar transformadores. |
 | Renderização visual | **DOM + SVG (React)** — renderer único | Texto vetorial nítido, escala infinita, casável 1:1 com a exportação. (Ver seção 5.) |
-| Exportação PNG/PDF | **Playwright (Chromium headless)** — já pré-instalado no ambiente | Imprime a mesma página React em dimensões reais → **PDF vetorial** e **PNG alta-DPI**. Nada de screenshot da UI. |
-| Banco | **PostgreSQL + Prisma ORM** | Relacional para os domínios + `jsonb` para o scene graph e configs de frame. Prisma dá tipos e migrations. |
+| Exportação PNG/PDF | **Chromium headless** via `@sparticuz/chromium` + `puppeteer-core` na Vercel | Imprime a mesma página React em dimensões reais → **PDF vetorial** e **PNG alta-DPI**. Nada de screenshot da UI. (Ver §10 sobre a restrição da Vercel e o plano de contingência.) |
+| Banco | **PostgreSQL gerenciado (Neon/Supabase/Vercel Postgres) + Prisma** | Relacional + `jsonb` para o scene graph. Em serverless usa **conexão pooled** (PgBouncer) + `directUrl` p/ migrations. |
 | Import Excel | **SheetJS (xlsx)** | Lê `.xlsx/.xls`, permite a etapa de **mapeamento coluna→campo** (seção 6). |
-| Storage de imagens | **S3-compatível** (MinIO em dev) via URLs assinadas | Imagens de produto/oferta e uploads do editor. Em dev pode cair para disco local. |
-| Auth | **Auth.js (NextAuth)** | Time interno; começa com credenciais/e-mail, extensível a SSO. |
-| Fila / jobs | **(Fase 2)** BullMQ + Redis | Export pesado, reprocessamento, aprendizado offline. No MVP a exportação roda inline. |
+| Storage de imagens | **Vercel Blob** (prod) / disco local (dev) via interface única | Disco da Vercel é efêmero/somente-leitura → imagens de produto/oferta e uploads vão para Blob (ou S3). |
+| Auth | **Auth.js (NextAuth)** | Time interno; começa com credenciais/e-mail, extensível a SSO. Roda bem na Vercel. |
+| Hosting | **Vercel** | Deploy do Next.js. Ver §10 (deploy, limites e mitigações). |
+| Fila / jobs | **(Fase 2)** worker externo p/ export pesado | Se a exportação estourar limites da Vercel, migra p/ um worker dedicado (Railway/Render/Fly). |
 
 ### Por que **não** Konva/Fabric puros para o documento
 
@@ -313,3 +314,53 @@ Cada `module` expõe serviços/casos-de-uso; a UI e as rotas **orquestram**, nã
 7. **PostgreSQL + jsonb para scene graph** → relacional onde importa, flexível onde o layout evolui.
 
 Ver `docs/ROADMAP.md` para o MVP, o plano incremental e as **decisões que dependem de você**.
+
+---
+
+## 10. Deploy na Vercel (restrições e mitigações)
+
+O app é online e hospedado na **Vercel**. Isso impõe decisões específicas:
+
+### Banco (serverless-safe)
+- Usar **Postgres gerenciado** com **connection pooling** (Neon, Supabase ou Vercel Postgres).
+- `DATABASE_URL` = conexão **pooled** (PgBouncer, modo transaction); `DIRECT_URL` = conexão direta
+  para `prisma migrate`. Já refletido no `schema.prisma`.
+- `prisma generate` roda no build (`build: prisma generate && next build`).
+
+### Storage de imagens (disco efêmero)
+- O filesystem da Vercel é efêmero/somente-leitura em runtime → **não** salvar imagens em disco.
+- Produção: **Vercel Blob** (ou S3). Dev: disco local. Abstraídos por uma interface `storage` única,
+  então o código de PIM/uploads não muda entre ambientes.
+
+### Exportação PNG/PDF — o ponto sensível
+Playwright completo **não** roda bem em funções serverless da Vercel (tamanho/tempo). Plano:
+- **MVP**: função serverless **Node** usando **`@sparticuz/chromium` + `puppeteer-core`** (Chromium
+  enxuto compatível com a Vercel), navegando até a rota estática `/(export)/...` e gerando PDF/PNG.
+  Rodar como **Route Handler Node.js** com `maxDuration` elevado; caber no limite de tamanho da função.
+- **Contingência** (se estourar limite/timeout, ex.: tabloides grandes): mover a exportação para um
+  **worker externo** (container com Playwright em Railway/Render/Fly), acionado por fila/HTTP. O
+  **módulo `export` já é isolado atrás de uma interface**, então essa troca não afeta o resto.
+- O princípio "**um renderer só**" se mantém: a rota estática renderizada é a mesma do editor.
+
+### Configuração
+- `vercel.json`/config define runtime Node e `maxDuration` da rota de export.
+- Variáveis: `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `BLOB_READ_WRITE_TOKEN` (Vercel Blob).
+
+---
+
+## 11. Painel administrador
+
+O produto é usado por uma equipe interna e **precisa de um painel administrador** (área `/admin`,
+restrita a `role = ADMIN`). Escopo:
+
+- **Usuários & acessos**: convidar, definir papel (ADMIN / EDITOR / REVIEWER).
+- **Templates & FrameStyles**: criar/editar/ativar, definir tema por campanha.
+- **Formatos de página** e **dinâmicas comerciais** (registry): habilitar/rotular.
+- **Perfis de importação** (mapeamentos salvos do Excel, ex.: perfil "TABLOIDE_SUPER").
+- **Catálogo/PIM**: gestão de produtos e imagens (compartilha telas com o PIM).
+- **Campanhas/tabloides**: visão geral de status (rascunho/revisão/aprovado), como no quadro da
+  referência Pricefy (Definição → Diagramação → Produção → Execução).
+- **Auditoria**: histórico de ações (`ReviewAction`, `LayoutRun`).
+
+Implementado como um segmento de layout próprio com guarda de sessão/role. Entra a partir da fatia 2
+(usuários + PIM) e cresce junto com templates/importação.

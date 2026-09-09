@@ -8,6 +8,9 @@ const formats = [
   { id: 'a5', label: 'A5', widthMm: 148, heightMm: 210, orientation: 'PORTRAIT' as const },
   // Digital 1080x1350 px @ 96dpi ≈ 285.75 x 357.19 mm (proporção preservada).
   { id: 'digital-1080x1350', label: 'Digital 1080×1350', widthMm: 285.75, heightMm: 357.19, orientation: 'PORTRAIT' as const },
+  // Encarte digital retrato (~1:1.58) — proporção das artes reais da Coocerqui (docs/ANALISE-VISUAL.md).
+  // Calibrado por 1080×1707px @ 96dpi; ajustar quando o tamanho exato for confirmado.
+  { id: 'encarte-digital', label: 'Encarte Digital (retrato)', widthMm: 285.75, heightMm: 451.65, orientation: 'PORTRAIT' as const },
 ];
 
 // Dinâmicas comerciais (registry). Calibradas pela análise do Excel real (docs/ANALISE-EXCEL.md):
@@ -15,8 +18,12 @@ const formats = [
 const offerTypes = [
   { id: 'simple', label: 'Preço simples' },
   { id: 'de-por', label: 'De / Por' },
+  // "Preço Cooperado": preço regular + preço de cooperado (sócio). Onipresente nas artes reais.
+  { id: 'cooperado', label: 'Preço Cooperado (regular + sócio)' },
   { id: 'x-por-y', label: 'X por Y (ex.: 3 por R$ 10)' },
   { id: 'leve-x-pague-y', label: 'Leve X pague Y' },
+  // "Leve X por R$Y" com preço por unidade destacado (ex.: LEVE 5 POR R$10, cada R$2,00).
+  { id: 'leve-x-por-y', label: 'Leve X por R$Y (cada un.)' },
   { id: 'por-unidade', label: 'Preço por unidade' },
   { id: 'acima-de', label: 'Acima de X unidades' },
   { id: 'combo', label: 'Combo / agrupado' },

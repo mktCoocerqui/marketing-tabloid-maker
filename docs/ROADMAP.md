@@ -10,7 +10,7 @@ Cada fatia é entregável e testável isoladamente. Ordem proposta:
 | # | Fatia | Entrega verificável |
 |---|---|---|
 | 1 | ✅ **Fundação**: Next.js + TS + Tailwind + Prisma + schema, layout base, health check, seed | App **compila, faz build e lint limpos**; dashboard placeholder; `/api/health`; seed de formatos/dinâmicas. *(Auth entra junto da fatia 2.)* |
-| 2 | **PIM básico + storage** | Cadastrar/listar/editar produto com imagem; buscar/filtrar por categoria |
+| 2 | **PIM básico + storage + auth + `/admin`** | Login; painel admin (role ADMIN); cadastrar/listar/editar produto com imagem; buscar/filtrar por categoria |
 | 3 | **`document-model` + `renderer`** (shared) | Renderizar um documento JSON de exemplo (textos/imagens/formas) em tela e numa rota estática |
 | 4 | **Exportação PNG/PDF** (Playwright/Chromium) | Exportar o documento da fatia 3 em PDF vetorial e PNG alta-DPI, dimensões reais |
 | 5 | **Editor visual**: store (zustand/zundo), interação (moveable/selecto), painéis, grid, snap, atalhos, autosave | Mover/resize/rotate/multi-seleção/undo-redo/autosave em páginas |
@@ -20,8 +20,15 @@ Cada fatia é entregável e testável isoladamente. Ordem proposta:
 | 9 | **Autodiagramação v1** (determinística + scoring) | Botão "Autodiagramar" distribui ofertas nos frames; pergunta ao exceder capacidade |
 | 10 | **Aba de Ofertas** (tabela editável, reflete no visual) | Editar preço/descrição/etc. e ver refletir no editor |
 | 11 | **Navegação de páginas** (add/dup/excluir/reordenar/aplicar template) | Multi-páginas operacional |
+| 12 | **Deploy na Vercel** | App online (Postgres pooled + Blob); export validado em produção |
 
 Ao final da Fase 1, o critério de sucesso (seção 34) itens 1–11 e 14 estão cobertos.
+
+**Painel administrador** (`/admin`, role ADMIN): começa na fatia 2 (usuários/PIM) e cresce ao longo
+das fatias (templates, dinâmicas, formatos, perfis de import, visão de campanhas). Ver `ARQUITETURA.md §11`.
+
+**Deploy contínuo**: a partir da fatia 2 já publicamos previews na Vercel a cada fatia, para validar
+online cedo. A exportação (fatia 4) é o ponto a validar com atenção na Vercel (`ARQUITETURA.md §10`).
 
 ### Fase 2
 PIM completo · biblioteca avançada de templates · **revisão** (participantes, "Revisei", aprovação,
@@ -48,10 +55,18 @@ recomendações · otimização automática de layout.
 4–6. Auth/storage/ordem confirmados; **auth** entra junto da fatia 2 (PIM), **storage** começa em
    disco local em dev com interface S3-compatível.
 
+7. ✅ **Referência visual** recebida (3 artes reais) → `docs/ANALISE-VISUAL.md`. Calibrou formato
+   (~1:1.58), layout em faixas por categoria, ~24 ofertas/página, dinâmicas (`cooperado`,
+   `leve-x-por-y`) e a tipografia das tags de preço.
+8. ✅ **Hosting = Vercel** e **admin panel** incorporados à arquitetura (`ARQUITETURA.md §10–11`).
+   Storage de imagens: **Vercel Blob** (prod) / disco local (dev).
+
 ### Ainda útil ter (não bloqueia)
-- **Referência visual de um tabloide real** (PDF/imagem de uma arte de vocês) para calibrar
-  proporções, densidade de ofertas/página e tipografia dos `FrameStyle` (fatia 6). Sem isso, uso
-  proporções padrão de mercado e ajustamos depois.
+- **Tamanho/px exato** do encarte e se haverá versão **impressa** (A4) além da digital — para fechar
+  o formato de exportação. Uso ~1:1.58 por enquanto.
+- **Paleta/tipografia oficiais** (cores exatas dos temas vermelho/verde/festivo, fontes) — uso
+  aproximações até receber a marca.
 
 ## Próximo passo
-Iniciar a **fatia 2 — PIM básico + storage + auth**, seguida da **fatia 3 (document-model + renderer)**.
+Iniciar a **fatia 2 — PIM + storage + auth + `/admin`**, seguida da **fatia 3 (document-model + renderer)**,
+publicando previews na Vercel a cada fatia.

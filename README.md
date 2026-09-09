@@ -13,6 +13,7 @@ editar num editor visual (estilo Canva) → revisar → exportar **PNG/PDF de al
   exportação e autodiagramação.
 - [`docs/MODELO-DE-DADOS.md`](docs/MODELO-DE-DADOS.md) — entidades e decisões do schema.
 - [`docs/ANALISE-EXCEL.md`](docs/ANALISE-EXCEL.md) — análise do Excel real e mapeamento do importador.
+- [`docs/ANALISE-VISUAL.md`](docs/ANALISE-VISUAL.md) — calibração pelas artes reais (frames, temas, dinâmicas).
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — MVP fatiado, plano incremental e status das decisões.
 - [`prisma/schema.prisma`](prisma/schema.prisma) — modelo de dados.
 
@@ -31,7 +32,8 @@ pnpm dev                      # http://localhost:3000  (health: /api/health)
 
 Next.js 15 (App Router) · TypeScript · Tailwind + shadcn/ui · PostgreSQL + Prisma ·
 Zustand/zundo · react-moveable + selecto · renderer DOM/SVG único · exportação via
-Playwright (Chromium headless) · SheetJS para Excel.
+Chromium headless (`@sparticuz/chromium` na Vercel) · SheetJS para Excel ·
+**deploy na Vercel** (Postgres pooled + Vercel Blob) · painel `/admin`.
 
 ## Princípio central
 

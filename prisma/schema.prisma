@@ -8,8 +8,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Em produção (Vercel), url aponta para a conexão POOLED (PgBouncer/Neon/Supabase);
+  // directUrl é a conexão direta usada pelas migrations. Em dev, ambas podem ser iguais.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ───────────────────────────── Usuários & acesso ─────────────────────────────
@@ -115,6 +118,9 @@ model Template {
   formatId    String                       // A4, A5, digital-1080x1350...
   format      PageFormat @relation(fields: [formatId], references: [id])
   thumbnailUrl String?
+  // Tema visual do template (cores/tipografia). Nas artes reais varia por campanha:
+  // vermelho (açougue), verde (hortifrúti/mercearia), festivo (R$10). Ver docs/ANALISE-VISUAL.md.
+  theme       Json?
   isActive    Boolean @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -163,6 +169,9 @@ model OfferFrame {
   frameStyleId   String?
   frameStyle     FrameStyle?  @relation(fields: [frameStyleId], references: [id])
   weight         Int          @default(1) // "importância" da posição p/ o scoring
+  // Nas artes reais os frames vivem em "faixas" por categoria (Açougue/Frios, Hortifrúti,
+  // Pescado, Bebidas, Mercearia...) com rótulo lateral. groupLabel identifica a faixa.
+  groupLabel     String?
 }
 
 // Estilo visual reutilizável do frame (mapeia campos da oferta -> subelementos).
