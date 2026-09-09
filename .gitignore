@@ -26,3 +26,7 @@ prisma/*.db
 
 # Export/temp artifacts
 /tmp-export/
+
+# TS/Next generated
+*.tsbuildinfo
+next-env.d.ts

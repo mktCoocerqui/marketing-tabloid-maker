@@ -9,7 +9,7 @@ Cada fatia é entregável e testável isoladamente. Ordem proposta:
 
 | # | Fatia | Entrega verificável |
 |---|---|---|
-| 1 | **Fundação**: Next.js + TS + Tailwind + Prisma + Postgres, auth básico, layout base | App sobe, migração cria o schema, login funciona |
+| 1 | ✅ **Fundação**: Next.js + TS + Tailwind + Prisma + schema, layout base, health check, seed | App **compila, faz build e lint limpos**; dashboard placeholder; `/api/health`; seed de formatos/dinâmicas. *(Auth entra junto da fatia 2.)* |
 | 2 | **PIM básico + storage** | Cadastrar/listar/editar produto com imagem; buscar/filtrar por categoria |
 | 3 | **`document-model` + `renderer`** (shared) | Renderizar um documento JSON de exemplo (textos/imagens/formas) em tela e numa rota estática |
 | 4 | **Exportação PNG/PDF** (Playwright/Chromium) | Exportar o documento da fatia 3 em PDF vetorial e PNG alta-DPI, dimensões reais |
@@ -40,19 +40,18 @@ recomendações · otimização automática de layout.
 
 ---
 
-## Decisões em aberto (dependem de você)
+## Decisões — status
 
-1. **Stack** — confirma **Next.js + Postgres + Prisma + renderer DOM/SVG + export Chromium**?
-   (ver `ARQUITETURA.md §2`). Se houver restrição de infra (ex.: sem Postgres, ou hospedagem
-   específica), me avise agora — muda pouco do desenho, mas melhor decidir antes da fatia 1.
-2. **Excel real** — preciso do arquivo da equipe (seção 33). Sem ele, modelo o importador por
-   mapeamento genérico, mas não consigo calibrar colunas/preços/dinâmicas reais.
-3. **Referência visual do tabloide** — uma arte real (PDF/imagem de um tabloide de vocês) para
-   calibrar proporções, densidade de ofertas/página e tipografia dos `FrameStyle`.
-4. **Autenticação** — credenciais internas simples no MVP, ou já integrar SSO (Google/Microsoft)?
-5. **Storage de imagens** — há um bucket S3/MinIO disponível, ou começo com disco local em dev?
-6. **Escopo do MVP** — concorda com a ordem das 11 fatias, ou quer priorizar algo (ex.: importação
-   antes do editor) para destravar valor mais cedo?
+1. ✅ **Stack** confirmada (Next.js + Postgres + Prisma + renderer DOM/SVG + export Chromium).
+2. ✅ **Excel real** recebido e analisado → `docs/ANALISE-EXCEL.md` + fixture em `docs/fixtures/`.
+3. ✅ Fatias validadas (ordem das 11 mantida).
+4–6. Auth/storage/ordem confirmados; **auth** entra junto da fatia 2 (PIM), **storage** começa em
+   disco local em dev com interface S3-compatível.
 
-Assim que validar (principalmente 1 e 2), começo pela **fatia 1 (fundação)** e sigo incrementalmente,
-validando cada uma antes de avançar.
+### Ainda útil ter (não bloqueia)
+- **Referência visual de um tabloide real** (PDF/imagem de uma arte de vocês) para calibrar
+  proporções, densidade de ofertas/página e tipografia dos `FrameStyle` (fatia 6). Sem isso, uso
+  proporções padrão de mercado e ajustamos depois.
+
+## Próximo passo
+Iniciar a **fatia 2 — PIM básico + storage + auth**, seguida da **fatia 3 (document-model + renderer)**.

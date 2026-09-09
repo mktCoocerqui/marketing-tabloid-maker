@@ -4,16 +4,28 @@ Plataforma interna para **criação e diagramação inteligente de tabloides pro
 importar ofertas de Excel → interpretar dados → escolher template → **autodiagramar** →
 editar num editor visual (estilo Canva) → revisar → exportar **PNG/PDF de alta qualidade**.
 
-> **Status:** Fase 0 — proposta de arquitetura para validação. Ainda **não há** código de aplicação;
-> esta entrega é a fundação documental + o modelo de dados. Ver as pendências antes de iniciar a Fase 1.
+> **Status:** Fase 1 em andamento — **fatia 1 (fundação) concluída**: o app compila, faz build e
+> lint limpos. Decisões e fatias validadas. Próxima: fatia 2 (PIM + storage + auth).
 
 ## Documentação
 
 - [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) — análise, stack, arquitetura, editor/canvas,
   exportação e autodiagramação.
 - [`docs/MODELO-DE-DADOS.md`](docs/MODELO-DE-DADOS.md) — entidades e decisões do schema.
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) — MVP fatiado, plano incremental e **decisões em aberto**.
-- [`prisma/schema.prisma`](prisma/schema.prisma) — modelo de dados proposto.
+- [`docs/ANALISE-EXCEL.md`](docs/ANALISE-EXCEL.md) — análise do Excel real e mapeamento do importador.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — MVP fatiado, plano incremental e status das decisões.
+- [`prisma/schema.prisma`](prisma/schema.prisma) — modelo de dados.
+
+## Como rodar (dev)
+
+```bash
+pnpm install
+cp .env.example .env          # ajuste DATABASE_URL (PostgreSQL)
+pnpm db:generate              # gera o Prisma Client
+pnpm db:push                  # cria o schema no banco
+pnpm db:seed                  # formatos de página + dinâmicas
+pnpm dev                      # http://localhost:3000  (health: /api/health)
+```
 
 ## Stack proposta (a confirmar)
 
