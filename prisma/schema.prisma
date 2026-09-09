@@ -17,8 +17,10 @@ datasource db {
 
 // ───────────────────────────── Usuários & acesso ─────────────────────────────
 
+// Perfil da aplicação. O `id` é o UID do usuário no Supabase Auth (auth.users.id),
+// definido no cadastro. Papel/role e dados de app vivem aqui (auth.users é gerenciado pelo Supabase).
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id // = auth.users.id (Supabase Auth)
   email     String   @unique
   name      String?
   role      UserRole @default(EDITOR)

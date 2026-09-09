@@ -4,8 +4,9 @@ Plataforma interna para **criação e diagramação inteligente de tabloides pro
 importar ofertas de Excel → interpretar dados → escolher template → **autodiagramar** →
 editar num editor visual (estilo Canva) → revisar → exportar **PNG/PDF de alta qualidade**.
 
-> **Status:** Fase 1 em andamento — **fatia 1 (fundação) concluída**: o app compila, faz build e
-> lint limpos. Decisões e fatias validadas. Próxima: fatia 2 (PIM + storage + auth).
+> **Status:** Fase 1 — fundação concluída + **infra Supabase provisionada** (schema, RLS, seed e
+> bucket de imagens no projeto `TABLOID-MAKER`). Build/lint limpos. Em andamento: fatia 2
+> (auth Supabase e-mail/senha + PIM + `/admin`). Ver [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ## Documentação
 

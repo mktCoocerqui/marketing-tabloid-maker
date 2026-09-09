@@ -49,10 +49,10 @@ oferta por `offerId` e um estilo por `frameStyleId`; ele **não copia** os dados
 | Interação no canvas | **react-moveable + selecto** | Drag/resize/rotate, **snapping**, guias e **seleção múltipla (marquee)** prontos e maduros — evita reimplementar transformadores. |
 | Renderização visual | **DOM + SVG (React)** — renderer único | Texto vetorial nítido, escala infinita, casável 1:1 com a exportação. (Ver seção 5.) |
 | Exportação PNG/PDF | **Chromium headless** via `@sparticuz/chromium` + `puppeteer-core` na Vercel | Imprime a mesma página React em dimensões reais → **PDF vetorial** e **PNG alta-DPI**. Nada de screenshot da UI. (Ver §10 sobre a restrição da Vercel e o plano de contingência.) |
-| Banco | **PostgreSQL gerenciado (Neon/Supabase/Vercel Postgres) + Prisma** | Relacional + `jsonb` para o scene graph. Em serverless usa **conexão pooled** (PgBouncer) + `directUrl` p/ migrations. |
+| Banco | **Supabase Postgres + Prisma** | Relacional + `jsonb`. Em serverless usa **pooler** (6543/PgBouncer) + `directUrl` p/ migrations. |
 | Import Excel | **SheetJS (xlsx)** | Lê `.xlsx/.xls`, permite a etapa de **mapeamento coluna→campo** (seção 6). |
-| Storage de imagens | **Vercel Blob** (prod) / disco local (dev) via interface única | Disco da Vercel é efêmero/somente-leitura → imagens de produto/oferta e uploads vão para Blob (ou S3). |
-| Auth | **Auth.js (NextAuth)** | Time interno; começa com credenciais/e-mail, extensível a SSO. Roda bem na Vercel. |
+| Storage de imagens | **Supabase Storage** (bucket `images`) via interface única | Imagens de produto/oferta e uploads; trocável por Blob/S3 sem afetar o PIM. |
+| Auth | **Supabase Auth** (e-mail/senha, sem 2FA) | Nativo, cookies via `@supabase/ssr`. `public.User` guarda o perfil/role (`id = auth.users.id`). |
 | Hosting | **Vercel** | Deploy do Next.js. Ver §10 (deploy, limites e mitigações). |
 | Fila / jobs | **(Fase 2)** worker externo p/ export pesado | Se a exportação estourar limites da Vercel, migra p/ um worker dedicado (Railway/Render/Fly). |
 

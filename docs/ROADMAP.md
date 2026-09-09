@@ -52,8 +52,9 @@ recomendações · otimização automática de layout.
 1. ✅ **Stack** confirmada (Next.js + Postgres + Prisma + renderer DOM/SVG + export Chromium).
 2. ✅ **Excel real** recebido e analisado → `docs/ANALISE-EXCEL.md` + fixture em `docs/fixtures/`.
 3. ✅ Fatias validadas (ordem das 11 mantida).
-4–6. Auth/storage/ordem confirmados; **auth** entra junto da fatia 2 (PIM), **storage** começa em
-   disco local em dev com interface S3-compatível.
+4–6. Confirmados: **Supabase Auth** (e-mail/senha, sem 2FA), **Supabase Storage** (bucket `images`),
+   ordem das fatias mantida. **Infra Supabase já provisionada** (schema + RLS + seed + bucket) —
+   ver `docs/DEPLOY.md`.
 
 7. ✅ **Referência visual** recebida (3 artes reais) → `docs/ANALISE-VISUAL.md`. Calibrou formato
    (~1:1.58), layout em faixas por categoria, ~24 ofertas/página, dinâmicas (`cooperado`,
