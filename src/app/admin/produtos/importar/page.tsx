@@ -34,7 +34,7 @@ export default function ImportarPage() {
   const router = useRouter();
   const [fileName, setFileName] = useState('');
   const [sheetNames, setSheetNames] = useState<string[]>([]);
-  const [wb, setWb] = useState<XLSX.WorkBook | null>(null);
+  const [buf, setBuf] = useState<ArrayBuffer | null>(null);
   const [sheet, setSheet] = useState('');
   const [headers, setHeaders] = useState<string[]>([]);
   const [dataRows, setDataRows] = useState<unknown[][]>([]);
@@ -49,16 +49,19 @@ export default function ImportarPage() {
     if (!file) return;
     setError(null); setResult(null);
     setFileName(file.name);
-    const buf = await file.arrayBuffer();
-    const book = XLSX.read(buf, { type: 'array' });
-    setWb(book);
-    setSheetNames(book.SheetNames);
-    const preferred = book.SheetNames.find((n) => n.trim().toUpperCase() === 'BASE') ?? book.SheetNames[0];
-    loadSheet(book, preferred);
+    const ab = await file.arrayBuffer();
+    setBuf(ab);
+    // Lê só os nomes das abas (rápido), sem materializar as 324 planilhas.
+    const meta = XLSX.read(ab, { type: 'array', bookSheets: true });
+    setSheetNames(meta.SheetNames);
+    const preferred = meta.SheetNames.find((n) => n.trim().toUpperCase() === 'BASE') ?? meta.SheetNames[0];
+    loadSheet(ab, preferred);
   }
 
-  function loadSheet(book: XLSX.WorkBook, name: string) {
+  function loadSheet(ab: ArrayBuffer, name: string) {
     setSheet(name);
+    // Lê apenas a aba selecionada.
+    const book = XLSX.read(ab, { type: 'array', sheets: [name] });
     const ws = book.Sheets[name];
     const rows = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, blankrows: false, defval: null });
     const hdr = (rows[0] ?? []).map((c) => String(c ?? '').trim());
@@ -136,12 +139,12 @@ export default function ImportarPage() {
         {fileName && <p className="mt-2 text-xs text-slate-400">{fileName} · {sheetNames.length} aba(s)</p>}
       </div>
 
-      {wb && (
+      {buf && (
         <>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
             <label className="text-sm">
               <span className="mb-1 block text-xs font-medium text-slate-600">Aba</span>
-              <select value={sheet} onChange={(e) => loadSheet(wb, e.target.value)} className="w-full rounded-md border bg-white px-2 py-2 text-sm">
+              <select value={sheet} onChange={(e) => buf && loadSheet(buf, e.target.value)} className="w-full rounded-md border bg-white px-2 py-2 text-sm">
                 {sheetNames.map((n) => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
