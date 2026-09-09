@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Env
+.env
+.env.local
+.env*.local
+
+# Prisma
+prisma/*.db
+
+# Logs / OS
+*.log
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Export/temp artifacts
+/tmp-export/
