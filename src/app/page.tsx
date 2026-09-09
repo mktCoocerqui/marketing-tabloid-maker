@@ -1,55 +1,76 @@
 import Link from 'next/link';
+import { prisma } from '@/server/db';
+import { requireProfile } from '@/server/auth';
+import { NewTabloidDialog } from '@/modules/tabloids/new-tabloid-dialog';
 
-// Dashboard placeholder (fatia 1). As seções (recentes, em revisão, aprovados,
-// templates) serão preenchidas nas próximas fatias do MVP.
-const sections = [
-  { title: 'Tabloides recentes', hint: 'Últimos editados aparecerão aqui.' },
-  { title: 'Aguardando revisão', hint: 'Enviados para a equipe (Fase 2).' },
-  { title: 'Aprovados', hint: 'Prontos para exportar.' },
-  { title: 'Templates', hint: 'Estruturas reutilizáveis.' },
-];
+const STATUS_LABEL: Record<string, string> = {
+  DRAFT: 'Rascunho',
+  IN_REVIEW: 'Em revisão',
+  APPROVED: 'Aprovado',
+  ARCHIVED: 'Arquivado',
+};
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireProfile();
+
+  const [formats, recent, inReview, approved] = await Promise.all([
+    prisma.pageFormat.findMany({ orderBy: { label: 'asc' } }),
+    prisma.tabloid.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take: 12,
+      include: { format: true },
+    }),
+    prisma.tabloid.count({ where: { status: 'IN_REVIEW' } }),
+    prisma.tabloid.count({ where: { status: 'APPROVED' } }),
+  ]);
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-slate-500">
-            Fundação do projeto. Próximas fatias: PIM, editor visual, importação e autodiagramação.
-          </p>
+          <p className="text-sm text-slate-500">Crie e gerencie seus tabloides promocionais.</p>
         </div>
-        <button
-          disabled
-          className="cursor-not-allowed rounded-md bg-brand px-4 py-2 text-sm font-medium text-white opacity-60"
-          title="Disponível na fatia 8"
-        >
-          Novo tabloide
-        </button>
+        <NewTabloidDialog formats={formats} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {sections.map((s) => (
-          <div key={s.title} className="rounded-lg border bg-white p-4">
-            <h2 className="text-sm font-medium">{s.title}</h2>
-            <p className="mt-2 text-xs text-slate-400">{s.hint}</p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="rounded-lg border bg-white p-4">
+          <p className="text-xs text-slate-400">Tabloides</p>
+          <p className="mt-1 text-2xl font-semibold">{recent.length}</p>
+        </div>
+        <div className="rounded-lg border bg-white p-4">
+          <p className="text-xs text-slate-400">Aguardando revisão</p>
+          <p className="mt-1 text-2xl font-semibold">{inReview}</p>
+        </div>
+        <div className="rounded-lg border bg-white p-4">
+          <p className="text-xs text-slate-400">Aprovados</p>
+          <p className="mt-1 text-2xl font-semibold">{approved}</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-sm font-semibold text-slate-600">Tabloides recentes</h2>
+        {recent.length === 0 ? (
+          <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-slate-400">
+            Nenhum tabloide ainda. Clique em <span className="font-medium text-slate-600">Novo tabloide</span> para começar.
           </div>
-        ))}
-      </div>
-
-      <div className="rounded-lg border bg-white p-4 text-sm text-slate-600">
-        <p className="font-medium">Status da fundação</p>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-slate-500">
-          <li>Next.js + TypeScript + Tailwind configurados.</li>
-          <li>
-            Schema Prisma e cliente prontos. Health check:{' '}
-            <Link href="/api/health" className="text-brand underline">
-              /api/health
-            </Link>
-            .
-          </li>
-          <li>Roadmap e arquitetura em <code>/docs</code>.</li>
-        </ul>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {recent.map((t) => (
+              <Link
+                key={t.id}
+                href={`/tabloids/${t.id}`}
+                className="rounded-lg border bg-white p-4 transition hover:border-brand hover:shadow-sm"
+              >
+                <p className="font-medium">{t.name}</p>
+                <p className="mt-1 text-xs text-slate-400">
+                  {t.format.label} · {STATUS_LABEL[t.status] ?? t.status}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
