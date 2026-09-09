@@ -3,9 +3,17 @@
 Análise do arquivo fornecido pela equipe (23 MB, **324 abas**, 22k strings, **0 imagens**).
 Calibra o importador (fatia 7) e o modelo de ofertas.
 
+> **Atualização importante:** o arquivo tem uma aba mestra **`BASE`** (catálogo de SKUs) além das
+> abas de campanha. Isso define dois papéis: `BASE` → **SKUs** (por COD_ERP); demais abas → **Ofertas**.
+> Ver [`PIM.md`](PIM.md) para a hierarquia ProductBase → Sku → Offer.
+>
+> **Aba `BASE`** (colunas): `COD_ERP, DESCRICAO, CURVA, NOME_COMPRADOR, CUSTO, PRECO, VOLUME MEDIO,
+> PARAMETRO FAMILIA, COD_FAMILIA, Custo Contabil NF, ALIQUOTA SAIDA TOTAL`. COD_ERP é a âncora do SKU;
+> COD_FAMILIA/CURVA/comprador vão para `Sku.erpData` (não são o "produto base" da app).
+
 ## Estrutura geral
 
-- **Cada aba = uma campanha/tabloide** (ex.: `FDS 23 A 2401`, `CHURRAS 2501`,
+- **Cada aba = uma campanha/tabloide** (exceto a aba `BASE`, que é o catálogo mestre de SKUs) (ex.: `FDS 23 A 2401`, `CHURRAS 2501`,
   `TERÇA QUARTA HORTI 20 A 21`, `REVISTA GERSON FEVEREIRO`). As abas "REVISTA <COMPRADOR>" são
   catálogos por comprador.
 - **É um export comercial/de precificação**, não um feed limpo de ofertas. A maioria das ~26 colunas

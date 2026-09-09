@@ -3,17 +3,17 @@ import { prisma } from '@/server/db';
 
 export default async function AdminHome() {
   const admin = await requireAdmin();
-  const [users, products, tabloids, templates] = await Promise.all([
+  const [users, bases, skus, tabloids] = await Promise.all([
     prisma.user.count(),
-    prisma.product.count(),
+    prisma.productBase.count(),
+    prisma.sku.count(),
     prisma.tabloid.count(),
-    prisma.template.count(),
   ]);
   const cards = [
     { label: 'Usuários', value: users },
-    { label: 'Produtos', value: products },
+    { label: 'Produtos', value: bases },
+    { label: 'Apresentações (SKU)', value: skus },
     { label: 'Tabloides', value: tabloids },
-    { label: 'Templates', value: templates },
   ];
   return (
     <div className="space-y-6">

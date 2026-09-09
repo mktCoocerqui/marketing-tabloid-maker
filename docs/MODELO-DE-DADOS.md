@@ -3,19 +3,22 @@
 Implementação em [`prisma/schema.prisma`](../prisma/schema.prisma). Este documento explica as
 decisões; o schema é a fonte da verdade.
 
+> **Atualização (hierarquia PIM):** o catálogo agora é `ProductBase → Sku → Offer` (ver
+> [`PIM.md`](PIM.md)). `Product`/`ProductImage` foram substituídos. COD_ERP é a âncora do SKU.
+
 ## Mapa das entidades
 
 ```
 User
 
-Product ─< ProductImage
-        ─< Offer >─ OfferType(registry)
+ProductBase ─< Sku ─< Offer >─ OfferType(registry)
+   (família)   (COD_ERP / apresentação)
 
 PageFormat ─< Template ─< TemplatePage ─< OfferFrame >─ FrameStyle
                                        (elements: jsonb estático)
 
 Tabloid ─< TabloidPage        (elements: jsonb = scene graph, inclui offer-frames)
-        ─< TabloidOffer        (snapshot da oferta no tabloide)
+        ─< TabloidOffer        (snapshot da oferta no tabloide; referencia skuId + sourceOfferId)
         ─< TabloidVersion      (snapshot imutável do documento)
         ─< Review ─< ReviewParticipant / ReviewAction
         ─< Export

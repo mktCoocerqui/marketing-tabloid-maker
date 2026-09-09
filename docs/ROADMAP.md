@@ -68,6 +68,16 @@ recomendações · otimização automática de layout.
 - **Paleta/tipografia oficiais** (cores exatas dos temas vermelho/verde/festivo, fontes) — uso
   aproximações até receber a marca.
 
-## Próximo passo
-Iniciar a **fatia 2 — PIM + storage + auth + `/admin`**, seguida da **fatia 3 (document-model + renderer)**,
-publicando previews na Vercel a cada fatia.
+## Progresso real (atualizado)
+- ✅ Fatia 1 (fundação) + **infra Supabase** (schema, RLS, seed, bucket) + **deploy Vercel no ar**.
+- ✅ **Auth Supabase** (e-mail/senha) + **painel `/admin`** + **criação de tabloide** (dashboard).
+- ✅ **Modelo PIM hierárquico** `ProductBase → Sku → Offer` com **COD_ERP** (migration
+  `pim_product_sku_hierarchy`) — ver [`PIM.md`](PIM.md).
+
+## Próximo passo (PIM, na ordem pedida)
+1. **PIM UI**: árvore Produto → Apresentação, ficha do SKU, edição (linguagem "Produto/Apresentação").
+2. **Importação da aba `BASE`** → SKUs (com Produto base).
+3. **Importação de campanha** → Ofertas com **matching por COD_ERP** + **tela de ambiguidade**.
+4. Upload de imagens por nível (com herança) + seletor de produto na criação de oferta.
+
+Depois: **document-model + renderer** (fatia 3) para as páginas deixarem de ser brancas, editor, autodiagramação e exportação.
