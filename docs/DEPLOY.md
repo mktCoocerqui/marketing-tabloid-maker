@@ -48,3 +48,17 @@ export; contingência = worker externo. A validar na fatia 4.
 1. Definir `DATABASE_URL`/`DIRECT_URL` (do Supabase) nas envs da Vercel.
 2. Conectar o repositório à Vercel (projeto Next.js) — pode ser via MCP da Vercel.
 3. Publicar preview a cada fatia a partir da fatia 2.
+
+## Imagens via Google Drive (conta de serviço)
+As imagens são nomeadas por **COD_ERP** (ex.: `2900.jpg`) e casadas com as apresentações.
+
+Setup (uma vez):
+1. Google Cloud Console → crie um **projeto** (ou use um existente) → **APIs & Services → Enable APIs** → habilite **Google Drive API**.
+2. **IAM & Admin → Service Accounts → Create service account** → crie e, em **Keys**, **Add key → JSON** (baixa o arquivo).
+3. Copie o **e-mail** da conta de serviço (algo como `...@...iam.gserviceaccount.com`) e **compartilhe a pasta do Drive** com esse e-mail (permissão Leitor).
+4. Converta o JSON em base64 e coloque nas envs da Vercel:
+   - `GOOGLE_SERVICE_ACCOUNT_JSON` = `base64 do arquivo .json` (ex.: `base64 -w0 chave.json`)
+   - `GOOGLE_DRIVE_FOLDER_ID` = ID da pasta (opcional; dá p/ colar o link na tela)
+5. Em **Admin → Produtos → Imagens do Drive**: cole o link da pasta → **Procurar imagens** → **Importar**.
+
+As imagens vão para o Supabase Storage (bucket `images`, caminho `sku/<COD_ERP>.<ext>`) e preenchem `Sku.imageUrl`.

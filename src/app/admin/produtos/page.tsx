@@ -26,6 +26,10 @@ export default async function ProdutosPage() {
           <p className="text-sm text-slate-500">Cada produto agrupa suas apresentações (KG, bandeja, fatiado…).</p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/admin/produtos/imagens"
+            className="rounded-md border px-4 py-2 text-sm font-medium text-slate-600 hover:border-brand hover:text-brand">
+            Imagens do Drive
+          </Link>
           <Link href="/admin/produtos/importar"
             className="rounded-md border px-4 py-2 text-sm font-medium text-slate-600 hover:border-brand hover:text-brand">
             Importar Excel
