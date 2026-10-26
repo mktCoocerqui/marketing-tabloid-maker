@@ -4,11 +4,11 @@ import { JWT } from 'google-auth-library';
 
 // Conta de serviço (JSON em base64 na env GOOGLE_SERVICE_ACCOUNT_JSON).
 function getClient() {
-  const b64 = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (!b64) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON não configurado.');
-  const json = JSON.parse(Buffer.from(b64, 'base64').toString('utf8')) as {
-    client_email: string; private_key: string;
-  };
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON não configurado.');
+  // Aceita o JSON cru (começa com "{") ou em base64.
+  const text = raw.trim().startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf8');
+  const json = JSON.parse(text) as { client_email: string; private_key: string };
   const auth = new JWT({
     email: json.client_email,
     key: json.private_key,
