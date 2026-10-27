@@ -4,7 +4,7 @@ import { createSupabaseAdminClient } from '@/server/supabase/admin';
 // Trocável por Vercel Blob/S3 sem afetar chamadas do PIM/uploads.
 const BUCKET = 'images';
 
-export async function uploadImage(path: string, file: ArrayBuffer, contentType: string): Promise<string> {
+export async function uploadImage(path: string, file: ArrayBuffer | Uint8Array, contentType: string): Promise<string> {
   const supabase = createSupabaseAdminClient();
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, { contentType, upsert: true });
   if (error) throw error;
